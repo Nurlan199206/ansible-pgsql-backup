@@ -1,0 +1,13 @@
+stages:
+  - backup
+
+
+Backup pgsql databases:
+  stage: backup
+  image: docker:stable
+  tags:
+    - ansible
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker run --rm -v /home/nurlan/:/root/ git.halykmarket.com:5050/finservice/deployment/temporal-db-backup-role:v1 ansible-playbook -i /root/backup/inventory /root/backup/tasks/main.yml --ssh-common-args='-o StrictHostKeyChecking=no'
+    - docker rmi git.halykmarket.com:5050/finservice/deployment/temporal-db-backup-role:v1
